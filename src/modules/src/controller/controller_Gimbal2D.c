@@ -29,6 +29,10 @@ Gimbal2D_P_Type Gimbal2D_P = {
   .Kp = 1.0f,
   .ThrustUpperBound = 4.0f*MOTOR_MAX_THRUST_N,
   .ThrustLowerBound = 0.0f,
+  //// Modified by Charles (Preset parameters, flashed into the hardware)
+  .K = { { 1000.0f, 0.0f, 109.5f, 0.0f }, { 0.0f, 1000.0f, 0.0f, 109.5f } }, // { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } }  Optimal Gain Matrix (default): 
+  .B_inv = { { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }, //  { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } } Pseudo-inverse Matrix (default): 
+  .J = {1.2e-5f, 1.2e-5f, 2.2e-5f}, // Moment of Inertia: Jx Jy Jz (default): {0.0f, 0.0f, 0.0f}
 };
 
 /**Instance of Input structure*/
@@ -293,6 +297,25 @@ void Gimbal2D_AlphaBetaEstimator()
 void Gimbal2D_controller()
 {
   // Update your control law here
+  // NSF Controller -- State Feedback
+  float z1 = Gimbal2D_Y.alpha_e - Gimbal2D_U.alpha_desired;
+  float z2 = Gimbal2D_Y.beta_e - Gimbal2D_U.beta_desired;
+  float z3 = Gimbal2D_Y.alpha_speed_e;
+  float z4 = Gimbal2D_Y.beta_speed_e;
+  float num1 = ((Gimbal2D_P.J[0] + Gimbal2D_P.J[1] - Gimbal2D_P.J[2])*sinf(Gimbal2D_Y.beta_e) - Gimbal2D_P.J[2]*cosf(Gimbal2D_Y.beta_e))*z3*z4;
+  float den1 = Gimbal2D_P.J[0]*cosf(Gimbal2D_Y.beta_e) + Gimbal2D_P.J[1]*sinf(Gimbal2D_Y.beta_e);
+  float cir1 = num1 / den1;
+  float num2 = (Gimbal2D_P.J[2] - Gimbal2D_P.J[0])*sinf(Gimbal2D_Y.beta_e)*cosf(Gimbal2D_Y.beta_e)*z3*z3;
+  float den2 = Gimbal2D_P.J[1];
+  float cir2 = num2 / den2;
+  float star = 1.0f / den1;
+  Gimbal2D_Y.utilt1 = - Gimbal2D_P.K[0][0]*z1 - Gimbal2D_P.K[0][2]*z3 - cir1;
+  Gimbal2D_Y.utilt2 = - Gimbal2D_P.K[1][1]*z2 - Gimbal2D_P.K[1][3]*z4 - cir2;
+  Gimbal2D_Y.u_u1 = Gimbal2D_Y.utilt1 / star; // Tau_x + Tau_z
+  Gimbal2D_Y.u_u2 = Gimbal2D_Y.utilt2 * Gimbal2D_P.J[1]; // Tau_y
+  Gimbal2D_Y.Tau_x = (cosf(Gimbal2D_Y.beta_e)*Gimbal2D_Y.u_u1 + tanf(Gimbal2D_Y.alpha_e)*Gimbal2D_Y.u_u2)/(sinf(Gimbal2D_Y.beta_e)+cosf(Gimbal2D_Y.beta_e));
+  Gimbal2D_Y.Tau_y = Gimbal2D_Y.u_u2;
+  Gimbal2D_Y.Tau_z = (sinf(Gimbal2D_Y.beta_e)*Gimbal2D_Y.u_u1 - tanf(Gimbal2D_Y.alpha_e)*Gimbal2D_Y.u_u2)/(sinf(Gimbal2D_Y.beta_e)+cosf(Gimbal2D_Y.beta_e));
 }
 
 void Gimbal2D_PowerDistribution()
@@ -415,6 +438,29 @@ bool controllerGimbal2DTest(void) {
 // Update your parameter here
 PARAM_GROUP_START(sparam_Gimbal2D)
 PARAM_ADD(PARAM_FLOAT, Kp, &Gimbal2D_P.Kp)
+// Parameters for K and B_inv and J (Needs debugging. Why cannot set by Python code?)
+PARAM_ADD(PARAM_FLOAT, K11, &Gimbal2D_P.K[0][0])
+PARAM_ADD(PARAM_FLOAT, K12, &Gimbal2D_P.K[0][1])
+PARAM_ADD(PARAM_FLOAT, K13, &Gimbal2D_P.K[0][2])
+PARAM_ADD(PARAM_FLOAT, K14, &Gimbal2D_P.K[0][3])
+PARAM_ADD(PARAM_FLOAT, K21, &Gimbal2D_P.K[1][0])
+PARAM_ADD(PARAM_FLOAT, K22, &Gimbal2D_P.K[1][1])
+PARAM_ADD(PARAM_FLOAT, K23, &Gimbal2D_P.K[1][2])
+PARAM_ADD(PARAM_FLOAT, K24, &Gimbal2D_P.K[1][3])
+
+PARAM_ADD(PARAM_FLOAT, B_inv11, &Gimbal2D_P.B_inv[0][0])
+PARAM_ADD(PARAM_FLOAT, B_inv12, &Gimbal2D_P.B_inv[0][1])
+PARAM_ADD(PARAM_FLOAT, B_inv13, &Gimbal2D_P.B_inv[0][2])
+PARAM_ADD(PARAM_FLOAT, B_inv14, &Gimbal2D_P.B_inv[0][3])
+PARAM_ADD(PARAM_FLOAT, B_inv21, &Gimbal2D_P.B_inv[1][0])
+PARAM_ADD(PARAM_FLOAT, B_inv22, &Gimbal2D_P.B_inv[1][1])
+PARAM_ADD(PARAM_FLOAT, B_inv23, &Gimbal2D_P.B_inv[1][2])
+PARAM_ADD(PARAM_FLOAT, B_inv24, &Gimbal2D_P.B_inv[1][3])
+
+PARAM_ADD(PARAM_FLOAT, Jx, &Gimbal2D_P.J[0])
+PARAM_ADD(PARAM_FLOAT, Jy, &Gimbal2D_P.J[1])
+PARAM_ADD(PARAM_FLOAT, Jz, &Gimbal2D_P.J[2])
+////////
 PARAM_GROUP_STOP(sparam_Gimbal2D)
 
 /**
@@ -432,4 +478,10 @@ LOG_ADD(LOG_FLOAT, t_m1, &Gimbal2D_Y.t_m1)
 LOG_ADD(LOG_FLOAT, t_m2, &Gimbal2D_Y.t_m2)
 LOG_ADD(LOG_FLOAT, t_m3, &Gimbal2D_Y.t_m3)
 LOG_ADD(LOG_FLOAT, t_m4, &Gimbal2D_Y.t_m4)
+//// NSF
+LOG_ADD(LOG_FLOAT, u1, &Gimbal2D_Y.u_u1)
+LOG_ADD(LOG_FLOAT, u2, &Gimbal2D_Y.u_u2)
+LOG_ADD(LOG_FLOAT, utilt1, &Gimbal2D_Y.utilt1)
+LOG_ADD(LOG_FLOAT, utilt2, &Gimbal2D_Y.utilt2)
+////
 LOG_GROUP_STOP(sctrl_Gimbal2D)

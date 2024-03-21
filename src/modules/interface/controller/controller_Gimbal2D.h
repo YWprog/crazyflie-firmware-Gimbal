@@ -62,12 +62,22 @@ typedef struct {
   float Tau_x;                      /* '<Root>/Tau_x' */
   float Tau_y;                      /* '<Root>/Tau_y' */
   float Tau_z;                      /* '<Root>/Tau_z' */
+  ///////////// Modified by Charles
+  float u_u1;
+  float u_u2;
+  float utilt1;
+  float utilt2;
+  ////////
 } Gimbal2D_Y_Type;
 
 typedef struct {
     float Kp;
     float ThrustUpperBound;
     float ThrustLowerBound;
+    ////// Modified by Charles (Why doesn't work?)
+    float K[2][4]; // Optimal Gain Matrix
+    float B_inv[2][4]; // Pseudo-inverse Matrix
+    float J[3]; // Moment of Inertia: Jx Jy Jz     
 } Gimbal2D_P_Type;
 
 extern Gimbal2D_P_Type Gimbal2D_P;
