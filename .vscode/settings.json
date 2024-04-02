@@ -48,7 +48,8 @@
         "motors.h": "c",
         "pid.h": "c",
         "dtr_p2p_interface.h": "c",
-        "system.h": "c"
+        "system.h": "c",
+        "pm.h": "c"
     }
 }
 

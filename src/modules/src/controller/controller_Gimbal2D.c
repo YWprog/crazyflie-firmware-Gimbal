@@ -17,6 +17,7 @@
 #include "motors.h"
 
 #define MOTOR_MAX_THRUST_N        (0.1472f)
+#define UMOTOR_MAX_THRUST_N        (0.21f)
 #define GIMBAL2D_ATTITUDE_UPDATE_DT    (float)(1.0f / ATTITUDE_RATE)
 #define JX    (16.6e-6f)
 #define JY    (16.6e-6f)
@@ -27,6 +28,8 @@ static bool isInit = false;
 Gimbal2D_P_Type Gimbal2D_P = {
   .ControlMode = GIMBAL2D_CONTROLMODE_PID,
   .PWMTest = {0, 0, 0, 0},
+  .MotorType = MOTOR_TYPE_NORMAL,
+  .MotorMaxThrust = MOTOR_MAX_THRUST_N,
   .ThrustUpperBound = 4.0f * MOTOR_MAX_THRUST_N,
   .ThrustLowerBound = 0.0f,
   .OFL_Lambda1 = -60.0f,
@@ -223,6 +226,15 @@ float atan2f_snf(float u0, float u1)
 void controllerGimbal2DInit(void) {
   if (isInit) {
     return;
+  }
+  switch( Gimbal2D_P.MotorType )
+  {
+    case MOTOR_TYPE_NORMAL:
+        Gimbal2D_P.MotorMaxThrust = MOTOR_MAX_THRUST_N;
+        break;
+    case MOTOR_TYPE_UPGRADED:
+        Gimbal2D_P.MotorMaxThrust = UMOTOR_MAX_THRUST_N;
+        break;
   }
   switch( Gimbal2D_P.ControlMode )
   {
@@ -549,8 +561,8 @@ void Gimbal2D_PowerDistribution()
   {
     Gimbal2D_Y.t_m1 = 0.0f;
     Gimbal2D_Y.IsClamped = 1;
-  } else if (Gimbal2D_Y.t_m1 > MOTOR_MAX_THRUST_N) {
-    Gimbal2D_Y.t_m1 = MOTOR_MAX_THRUST_N;
+  } else if (Gimbal2D_Y.t_m1 > Gimbal2D_P.MotorMaxThrust) {
+    Gimbal2D_Y.t_m1 = Gimbal2D_P.MotorMaxThrust;
     Gimbal2D_Y.IsClamped = 1;
   }
 
@@ -558,8 +570,8 @@ void Gimbal2D_PowerDistribution()
   {
     Gimbal2D_Y.t_m2 = 0.0f;
     Gimbal2D_Y.IsClamped = 1;
-  } else if (Gimbal2D_Y.t_m2 > MOTOR_MAX_THRUST_N) {
-    Gimbal2D_Y.t_m2 = MOTOR_MAX_THRUST_N;
+  } else if (Gimbal2D_Y.t_m2 > Gimbal2D_P.MotorMaxThrust) {
+    Gimbal2D_Y.t_m2 = Gimbal2D_P.MotorMaxThrust;
     Gimbal2D_Y.IsClamped = 1;
   }
 
@@ -567,8 +579,8 @@ void Gimbal2D_PowerDistribution()
   {
     Gimbal2D_Y.t_m3 = 0.0f;
     Gimbal2D_Y.IsClamped = 1;
-  } else if (Gimbal2D_Y.t_m3 > MOTOR_MAX_THRUST_N) {
-    Gimbal2D_Y.t_m3 = MOTOR_MAX_THRUST_N;
+  } else if (Gimbal2D_Y.t_m3 > Gimbal2D_P.MotorMaxThrust) {
+    Gimbal2D_Y.t_m3 = Gimbal2D_P.MotorMaxThrust;
     Gimbal2D_Y.IsClamped = 1;
   }
 
@@ -576,8 +588,8 @@ void Gimbal2D_PowerDistribution()
   {
     Gimbal2D_Y.t_m4 = 0.0f;
     Gimbal2D_Y.IsClamped = 1;
-  } else if (Gimbal2D_Y.t_m4 > MOTOR_MAX_THRUST_N) {
-    Gimbal2D_Y.t_m4 = MOTOR_MAX_THRUST_N;
+  } else if (Gimbal2D_Y.t_m4 > Gimbal2D_P.MotorMaxThrust) {
+    Gimbal2D_Y.t_m4 = Gimbal2D_P.MotorMaxThrust;
     Gimbal2D_Y.IsClamped = 1;
   }
 
@@ -589,10 +601,10 @@ void Gimbal2D_PowerDistribution()
     Gimbal2D_Y.m3 = Gimbal2D_P.PWMTest[2];
     Gimbal2D_Y.m4 = Gimbal2D_P.PWMTest[3];
   } else {
-    Gimbal2D_Y.m1 = Gimbal2D_Y.t_m1 / MOTOR_MAX_THRUST_N * 65535;
-    Gimbal2D_Y.m2 = Gimbal2D_Y.t_m2 / MOTOR_MAX_THRUST_N * 65535;
-    Gimbal2D_Y.m3 = Gimbal2D_Y.t_m3 / MOTOR_MAX_THRUST_N * 65535;
-    Gimbal2D_Y.m4 = Gimbal2D_Y.t_m4 / MOTOR_MAX_THRUST_N * 65535;
+    Gimbal2D_Y.m1 = Gimbal2D_Y.t_m1 / Gimbal2D_P.MotorMaxThrust * 65535;
+    Gimbal2D_Y.m2 = Gimbal2D_Y.t_m2 / Gimbal2D_P.MotorMaxThrust * 65535;
+    Gimbal2D_Y.m3 = Gimbal2D_Y.t_m3 / Gimbal2D_P.MotorMaxThrust * 65535;
+    Gimbal2D_Y.m4 = Gimbal2D_Y.t_m4 / Gimbal2D_P.MotorMaxThrust * 65535;
   }
 }
 
@@ -653,10 +665,21 @@ void controllerGimbal2D(control_t *control,
     }
     else
     {
-      motorsSetRatio(0, Gimbal2D_Y.m1);
-      motorsSetRatio(1, Gimbal2D_Y.m2);
-      motorsSetRatio(2, Gimbal2D_Y.m3);
-      motorsSetRatio(3, Gimbal2D_Y.m4);
+      switch(Gimbal2D_P.MotorType) 
+      {
+        case MOTOR_TYPE_NORMAL:
+            motorsSetRatio(0, Gimbal2D_Y.m1);
+            motorsSetRatio(1, Gimbal2D_Y.m2);
+            motorsSetRatio(2, Gimbal2D_Y.m3);
+            motorsSetRatio(3, Gimbal2D_Y.m4);
+        break;
+        case MOTOR_TYPE_UPGRADED:
+            UmotorsSetRatio(0, Gimbal2D_Y.m1);
+            UmotorsSetRatio(1, Gimbal2D_Y.m2);
+            UmotorsSetRatio(2, Gimbal2D_Y.m3);
+            UmotorsSetRatio(3, Gimbal2D_Y.m4);
+        break;
+      }
     }
   }
 }
@@ -669,6 +692,7 @@ bool controllerGimbal2DTest(void) {
 // The name of the variable cannot be too long
 PARAM_GROUP_START(sparam_Gimbal2D)
 PARAM_ADD(PARAM_UINT16, cmode, &Gimbal2D_P.ControlMode)
+PARAM_ADD(PARAM_UINT16, mtype, &Gimbal2D_P.MotorType)
 
 // for PWM Test
 PARAM_ADD(PARAM_UINT16, M1, &Gimbal2D_P.PWMTest[0])

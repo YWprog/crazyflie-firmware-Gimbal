@@ -484,13 +484,56 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
     }
     else
     {
-      // float thrust = ((float)ithrust / 65536.0f) * 60;
-      // float volts = (-0.0006239f * thrust * thrust + 0.088f * thrust) / 3.03396f * 3.4f;
-      // float supply_voltage = pmGetBatteryVoltage();
-      // float percentage = volts / supply_voltage;
-      // percentage = percentage > 1.0f ? 1.0f : percentage;
-      // ratio = UINT16_MAX * percentage;
-      // motor_ratios[id] = ratio;
+      float thrust = ((float)ithrust / 65536.0f) * 60;
+      float volts = (-0.0006239f * thrust * thrust + 0.088f * thrust) / 3.03396f * 3.4f;
+      float supply_voltage = pmGetBatteryVoltage();
+      float percentage = volts / supply_voltage;
+      percentage = percentage > 1.0f ? 1.0f : percentage;
+      ratio = UINT16_MAX * percentage;
+      motor_ratios[id] = ratio;
+      motorMap[id]->setCompare(motorMap[id]->tim, motorsConv16ToBits(ratio));
+    }
+
+    if (id == MOTOR_M1)
+    {
+      uint64_t currTime = usecTimestamp();
+      cycleTime = currTime - lastCycleTime;
+      lastCycleTime = currTime;
+    }
+  }
+}
+
+void UmotorsSetRatio(uint32_t id, uint16_t ithrust)
+{
+  if (isInit) {
+    ASSERT(id < NBR_OF_MOTORS);
+
+    uint16_t ratio = ithrust;
+
+    if (motorSetEnable) {
+      ratio = motorPowerSet[id];
+    }
+
+    motor_ratios[id] = ratio;
+
+    if (motorMap[id]->drvType == BRUSHLESS)
+    {
+#ifdef CONFIG_MOTORS_ESC_PROTOCOL_DSHOT
+      // Prepare DSHOT, firing it will be done synchronously with motorsBurstDshot.
+      motorsPrepareDshot(id, ratio);
+#else
+      motorMap[id]->setCompare(motorMap[id]->tim, motorsBLConv16ToBits(ratio));
+#endif
+    }
+    else
+    {
+      float thrust = ((float)ithrust / 65536.0f) * 84;
+      float volts = (-0.0004232f * thrust * thrust + 0.071f * thrust);
+      float supply_voltage = pmGetBatteryVoltage();
+      float percentage = volts / supply_voltage;
+      percentage = percentage > 1.0f ? 1.0f : percentage;
+      ratio = UINT16_MAX * percentage;
+      motor_ratios[id] = ratio;
       motorMap[id]->setCompare(motorMap[id]->tim, motorsConv16ToBits(ratio));
     }
 

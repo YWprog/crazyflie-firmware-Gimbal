@@ -18,6 +18,12 @@ enum CONTROL_MODE
   GIMBAL2D_CONTROLMODE_PWMTEST = 10,
 };
 
+enum MOTOR_TYPE
+{
+  MOTOR_TYPE_NORMAL = 0,
+  MOTOR_TYPE_UPGRADED = 1
+};
+
 typedef struct {
   float qw_Base;                      /* '<Root>/qw_op' */
   float qx_Base;                      /* '<Root>/qx_op' */
@@ -88,6 +94,8 @@ typedef struct {
 typedef struct {
     unsigned short ControlMode;
     unsigned short PWMTest[4];
+    unsigned short MotorType;
+    float MotorMaxThrust;
     float OFL_Lambda1;
     float OFL_Lambda2;
     float OFL_k1;

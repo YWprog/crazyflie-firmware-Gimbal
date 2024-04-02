@@ -322,6 +322,8 @@ void motorsBurstDshot();
  */
 void motorsSetRatio(uint32_t id, uint16_t ratio);
 
+void UmotorsSetRatio(uint32_t id, uint16_t ratio);
+
 /**
  * Get the PWM ratio of the motor 'id'. Return -1 if wrong ID.
  */
