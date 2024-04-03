@@ -531,6 +531,10 @@ void Gimbal2D_controller()
         Gimbal2D_controller_pwmtest();
         break;
 
+    case GIMBAL2D_CONTROLMODE_THRUST:
+        Gimbal2D_controller_pwmtest();
+        break;
+
     default:
         break;
   }      
