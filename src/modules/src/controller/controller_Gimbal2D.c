@@ -336,6 +336,16 @@ void Gimbal2D_AlphaBetaEstimator()
   float beta0_e = atan2f_snf(RotM.m[2][0], RotM.m[0][0]);
 
   // Thrust Clamper
+  switch( Gimbal2D_P.MotorType )
+  {
+    case MOTOR_TYPE_NORMAL:
+        Gimbal2D_P.MotorMaxThrust = MOTOR_MAX_THRUST_N;
+        break;
+    case MOTOR_TYPE_UPGRADED:
+        Gimbal2D_P.MotorMaxThrust = UMOTOR_MAX_THRUST_N;
+        break;
+  }
+  Gimbal2D_P.ThrustUpperBound = 4.0f * Gimbal2D_P.MotorMaxThrust;
   if (Gimbal2D_U.thrust >
       Gimbal2D_P.ThrustUpperBound) {
     Gimbal2D_U.ClampedThrust = Gimbal2D_P.ThrustUpperBound;
@@ -501,7 +511,7 @@ void Gimbal2D_controller_nsf()
   Y->Tau_z = (sinf(Y->beta_e)*Y->u_u1 - tanf(Y->alpha_e)*Y->u_u2)/(sinf(Y->beta_e)+cosf(Y->beta_e));
 }
 
-void Gimbal2D_controller_pwmtest()
+void Gimbal2D_controller_bypassTorqueControl()
 {
   // Directly assign M1~M4, so torque commands are all zero.
   Gimbal2D_Y.Tau_x = 0.0f;
@@ -528,11 +538,11 @@ void Gimbal2D_controller()
         break;
 
     case GIMBAL2D_CONTROLMODE_PWMTEST:
-        Gimbal2D_controller_pwmtest();
+        Gimbal2D_controller_bypassTorqueControl();
         break;
 
     case GIMBAL2D_CONTROLMODE_THRUST:
-        Gimbal2D_controller_pwmtest();
+        Gimbal2D_controller_bypassTorqueControl();
         break;
 
     default:
