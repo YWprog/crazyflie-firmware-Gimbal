@@ -240,8 +240,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m1 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m1 > 0.1472f) {
-    omni_attitude_controller_Y.t_m1 = 0.1472f;
+  } else if (omni_attitude_controller_Y.t_m1 > 0.206f) {
+    omni_attitude_controller_Y.t_m1 = 0.206f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -249,8 +249,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m2 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m2 > 0.1472f) {
-    omni_attitude_controller_Y.t_m2 = 0.1472f;
+  } else if (omni_attitude_controller_Y.t_m2 > 0.206f) {
+    omni_attitude_controller_Y.t_m2 = 0.206f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -258,8 +258,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m3 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m3 > 0.1472f) {
-    omni_attitude_controller_Y.t_m3 = 0.1472f;
+  } else if (omni_attitude_controller_Y.t_m3 > 0.206f) {
+    omni_attitude_controller_Y.t_m3 = 0.206f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -267,16 +267,16 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m4 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m4 > 0.1472f) {
-    omni_attitude_controller_Y.t_m4 = 0.1472f;
+  } else if (omni_attitude_controller_Y.t_m4 > 0.206f) {
+    omni_attitude_controller_Y.t_m4 = 0.206f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
   // Turn Newton into percentage and count
-  omni_attitude_controller_Y.m1 = omni_attitude_controller_Y.t_m1 / 0.1472f * 65535;
-  omni_attitude_controller_Y.m2 = omni_attitude_controller_Y.t_m2 / 0.1472f * 65535;
-  omni_attitude_controller_Y.m3 = omni_attitude_controller_Y.t_m3 / 0.1472f * 65535;
-  omni_attitude_controller_Y.m4 = omni_attitude_controller_Y.t_m4 / 0.1472f * 65535;
+  omni_attitude_controller_Y.m1 = omni_attitude_controller_Y.t_m1 / 0.206f * 65535;
+  omni_attitude_controller_Y.m2 = omni_attitude_controller_Y.t_m2 / 0.206f * 65535;
+  omni_attitude_controller_Y.m3 = omni_attitude_controller_Y.t_m3 / 0.206f * 65535;
+  omni_attitude_controller_Y.m4 = omni_attitude_controller_Y.t_m4 / 0.206f * 65535;
 }
 
 void omni_attitude_controller_step_hand(void)

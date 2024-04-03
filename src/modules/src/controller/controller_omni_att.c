@@ -90,10 +90,10 @@ void controllerOmniAtt(control_t *control, const setpoint_t *setpoint,
   }
   else
   {
-    motorsSetRatio(0, omni_attitude_controller_Y.m1);
-    motorsSetRatio(1, omni_attitude_controller_Y.m2);
-    motorsSetRatio(2, omni_attitude_controller_Y.m3);
-    motorsSetRatio(3, omni_attitude_controller_Y.m4);
+    UmotorsSetRatio(0, omni_attitude_controller_Y.m1);
+    UmotorsSetRatio(1, omni_attitude_controller_Y.m2);
+    UmotorsSetRatio(2, omni_attitude_controller_Y.m3);
+    UmotorsSetRatio(3, omni_attitude_controller_Y.m4);
   }
 }
 

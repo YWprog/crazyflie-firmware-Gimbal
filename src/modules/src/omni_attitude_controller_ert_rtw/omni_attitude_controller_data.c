@@ -73,7 +73,7 @@ P_omni_attitude_controller_T omni_attitude_controller_P = {
   /* Computed Parameter: Saturation_UpperSat
    * Referenced by: '<Root>/Saturation'
    */
-  0.7F,
+  0.824F,
 
   /* Computed Parameter: Saturation_LowerSat
    * Referenced by: '<Root>/Saturation'
