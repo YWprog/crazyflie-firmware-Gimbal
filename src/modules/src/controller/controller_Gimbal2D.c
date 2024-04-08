@@ -117,6 +117,10 @@ Gimbal2D_Y_Type Gimbal2D_Y = {
         .z2 = 0.0,
         .z3 = 0.0,
         .z4 = 0.0,
+        .qbii_w = 0.0, 
+        .qbii_x = 0.0, 
+        .qbii_y = 0.0, 
+        .qbii_z = 0.0, 
         .utilt1 = 0.0,
         .utilt2 = 0.0,
         .u_u1 = 0.0,
@@ -325,6 +329,10 @@ void Gimbal2D_AlphaBetaEstimator()
 
   // rotation from ith base to qc
   Gimbal2D_quatmultiply(q_bi_inv, q_i, q_bii);
+  Gimbal2D_Y.qbii_w = q_bii[0];
+  Gimbal2D_Y.qbii_x = q_bii[1];
+  Gimbal2D_Y.qbii_y = q_bii[2];
+  Gimbal2D_Y.qbii_z = q_bii[3];
 
   // change to R3x3
   struct mat33 RotM;
@@ -769,6 +777,11 @@ LOG_ADD(LOG_FLOAT, t_m1, &Gimbal2D_Y.t_m1)
 LOG_ADD(LOG_FLOAT, t_m2, &Gimbal2D_Y.t_m2)
 LOG_ADD(LOG_FLOAT, t_m3, &Gimbal2D_Y.t_m3)
 LOG_ADD(LOG_FLOAT, t_m4, &Gimbal2D_Y.t_m4)
+
+LOG_ADD(LOG_FLOAT, qbiiw, &Gimbal2D_Y.qbii_w)
+LOG_ADD(LOG_FLOAT, qbiix, &Gimbal2D_Y.qbii_x)
+LOG_ADD(LOG_FLOAT, qbiiy, &Gimbal2D_Y.qbii_y)
+LOG_ADD(LOG_FLOAT, qbiiz, &Gimbal2D_Y.qbii_z)
 
 LOG_ADD(LOG_FLOAT, z1, &Gimbal2D_Y.z1)
 LOG_ADD(LOG_FLOAT, z2, &Gimbal2D_Y.z2)

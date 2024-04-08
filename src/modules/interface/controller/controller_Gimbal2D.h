@@ -81,6 +81,10 @@ typedef struct {
   float utilt2;
   float u_u1;
   float u_u2;
+  float qbii_w;
+  float qbii_x;
+  float qbii_y;
+  float qbii_z;
   float error_alphas;               /* '<Root>/error_alphas' */
   float error_betas;                /* '<Root>/error_betas' */
   float rollPart;

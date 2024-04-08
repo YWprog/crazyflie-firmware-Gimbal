@@ -49,7 +49,8 @@
         "pid.h": "c",
         "dtr_p2p_interface.h": "c",
         "system.h": "c",
-        "pm.h": "c"
+        "pm.h": "c",
+        "task.h": "c"
     }
 }
 
