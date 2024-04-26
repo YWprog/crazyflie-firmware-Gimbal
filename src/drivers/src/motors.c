@@ -584,7 +584,7 @@ void CSRmotorsSetRatio(uint32_t id, uint16_t ithrust)
     {
       float thrust = ((float)ithrust / 65536.0f);
       float supply_voltage = pmGetBatteryVoltage();
-      float Vsup_percentage = (supply_voltage - 3.3f) / (4.2f - 3.3f);
+      float Vsup_percentage = (supply_voltage) / (4.2f);
       Vsup_percentage = Vsup_percentage > 1.0f ? 1.0f : Vsup_percentage;
       Vsup_percentage = Vsup_percentage < 0.0f ? 0.0f : Vsup_percentage;
 
