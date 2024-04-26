@@ -164,45 +164,45 @@ static bool isFlyingCheck(SupervisorMem_t* this, const uint32_t tick) {
 // the thrust to the motors, avoiding the Crazyflie from running propellers at
 // significant thrust when accidentally crashing into walls or the ground.
 //
-static bool isTumbledCheck(SupervisorMem_t* this, const sensorData_t *data, const uint32_t tick) {
-  const float freeFallThreshold = 0.1;
+// static bool isTumbledCheck(SupervisorMem_t* this, const sensorData_t *data, const uint32_t tick) {
+//   const float freeFallThreshold = 0.1;
 
-  const float acceptedTiltAccZ = 0.5;  // 60 degrees tilt (when stationary)
-  const uint32_t maxTiltTime = M2T(1000);
+//   const float acceptedTiltAccZ = 0.5;  // 60 degrees tilt (when stationary)
+//   const uint32_t maxTiltTime = M2T(1000);
 
-  const float acceptedUpsideDownAccZ = -0.2;
-  const uint32_t maxUpsideDownTime = M2T(100);
+//   const float acceptedUpsideDownAccZ = -0.2;
+//   const uint32_t maxUpsideDownTime = M2T(100);
 
-  const bool isFreeFalling = (fabsf(data->acc.z) < freeFallThreshold && fabsf(data->acc.y) < freeFallThreshold && fabsf(data->acc.x) < freeFallThreshold);
-  if (isFreeFalling) {
-    // Falling is OK, reset
-    this->initialTumbleTick = 0;
-  }
+//   const bool isFreeFalling = (fabsf(data->acc.z) < freeFallThreshold && fabsf(data->acc.y) < freeFallThreshold && fabsf(data->acc.x) < freeFallThreshold);
+//   if (isFreeFalling) {
+//     // Falling is OK, reset
+//     this->initialTumbleTick = 0;
+//   }
 
-  const bool isTilted = (data->acc.z < acceptedTiltAccZ);
-  if(isTilted) {  // Will also be true for up side down
-    if (0 == this->initialTumbleTick) {
-      // Start the clock
-      this->initialTumbleTick = tick;
-    }
+  // const bool isTilted = (data->acc.z < acceptedTiltAccZ);
+  // if(isTilted) {  // Will also be true for up side down
+  //   if (0 == this->initialTumbleTick) {
+  //     // Start the clock
+  //     this->initialTumbleTick = tick;
+  //   }
 
-    const uint32_t ticksBeingTumbled = tick - this->initialTumbleTick;
+  //   const uint32_t ticksBeingTumbled = tick - this->initialTumbleTick;
 
-    const bool isUpSideDown = (data->acc.z < acceptedUpsideDownAccZ);
-    if (isUpSideDown && (ticksBeingTumbled > maxUpsideDownTime)) {
-      return true;
-    }
+  //   const bool isUpSideDown = (data->acc.z < acceptedUpsideDownAccZ);
+  //   if (isUpSideDown && (ticksBeingTumbled > maxUpsideDownTime)) {
+  //     return true;
+  //   }
 
-    if (ticksBeingTumbled > maxTiltTime) {
-      return true;
-    }
-  } else {
-    // We're OK, reset
-    this->initialTumbleTick = 0;
-  }
+  //   if (ticksBeingTumbled > maxTiltTime) {
+  //     return true;
+  //   }
+  // } else {
+  //   // We're OK, reset
+  //   this->initialTumbleTick = 0;
+  // }
 
-  return false;
-}
+//   return false;
+// }
 
 static bool checkEmergencyStopWatchdog(const uint32_t tick) {
   bool isOk = true;
@@ -257,10 +257,10 @@ static supervisorConditionBits_t updateAndPopulateConditions(SupervisorMem_t* th
     conditions |= SUPERVISOR_CB_IS_FLYING;
   }
 
-  const bool isTumbled = isTumbledCheck(this, sensors, currentTick);
-  if (isTumbled) {
-    conditions |= SUPERVISOR_CB_IS_TUMBLED;
-  }
+  // const bool isTumbled = isTumbledCheck(this, sensors, currentTick);
+  // if (isTumbled) {
+  //   conditions |= SUPERVISOR_CB_IS_TUMBLED;
+  // }
 
   const uint32_t setpointAge = currentTick - setpoint->timestamp;
   if (setpointAge > COMMANDER_WDT_TIMEOUT_STABILIZE) {

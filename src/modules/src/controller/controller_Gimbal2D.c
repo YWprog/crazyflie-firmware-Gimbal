@@ -247,11 +247,11 @@ void controllerGimbal2DInit(void) {
         pidInit(&Gimbal2D_P.alphaPID,  0, Gimbal2D_P.alphaPID.kp,  Gimbal2D_P.alphaPID.ki,  Gimbal2D_P.alphaPID.kd,
             Gimbal2D_P.alphaPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 0, 0);
         pidInit(&Gimbal2D_P.alphasPID,  0, Gimbal2D_P.alphasPID.kp,  Gimbal2D_P.alphasPID.ki,  Gimbal2D_P.alphasPID.kd,
-            Gimbal2D_P.alphasPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 0, 0);
+            Gimbal2D_P.alphasPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 30, 1);
         pidInit(&Gimbal2D_P.betaPID,  0, Gimbal2D_P.betaPID.kp,  Gimbal2D_P.betaPID.ki,  Gimbal2D_P.betaPID.kd,
             Gimbal2D_P.betaPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 0, 0);
         pidInit(&Gimbal2D_P.betasPID,  0, Gimbal2D_P.betasPID.kp,  Gimbal2D_P.betasPID.ki,  Gimbal2D_P.betasPID.kd,
-            Gimbal2D_P.betasPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 0, 0);
+            Gimbal2D_P.betasPID.kff,  GIMBAL2D_ATTITUDE_UPDATE_DT, ATTITUDE_RATE, 30, 1);
         break;
     case GIMBAL2D_CONTROLMODE_OFL:
         Gimbal2D_P.OFL_k1 = -1.0f * Gimbal2D_P.OFL_Lambda1 * Gimbal2D_P.OFL_Lambda2;
