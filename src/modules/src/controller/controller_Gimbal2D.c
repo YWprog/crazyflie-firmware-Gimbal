@@ -696,10 +696,10 @@ void controllerGimbal2D(control_t *control,
             motorsSetRatio(3, Gimbal2D_Y.m4);
         break;
         case MOTOR_TYPE_UPGRADED:
-            UmotorsSetRatio(0, Gimbal2D_Y.m1);
-            UmotorsSetRatio(1, Gimbal2D_Y.m2);
-            UmotorsSetRatio(2, Gimbal2D_Y.m3);
-            UmotorsSetRatio(3, Gimbal2D_Y.m4);
+            CSRmotorsSetRatio(0, Gimbal2D_Y.m1);
+            CSRmotorsSetRatio(1, Gimbal2D_Y.m2);
+            CSRmotorsSetRatio(2, Gimbal2D_Y.m3);
+            CSRmotorsSetRatio(3, Gimbal2D_Y.m4);
         break;
       }
     }

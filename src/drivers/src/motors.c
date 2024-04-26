@@ -558,6 +558,64 @@ void UmotorsSetRatio(uint32_t id, uint16_t ithrust)
   }
 }
 
+void CSRmotorsSetRatio(uint32_t id, uint16_t ithrust)
+{
+  if (isInit) {
+    ASSERT(id < NBR_OF_MOTORS);
+
+    uint16_t ratio = ithrust;
+
+    if (motorSetEnable) {
+      ratio = motorPowerSet[id];
+    }
+
+    motor_ratios[id] = ratio;
+
+    if (motorMap[id]->drvType == BRUSHLESS)
+    {
+#ifdef CONFIG_MOTORS_ESC_PROTOCOL_DSHOT
+      // Prepare DSHOT, firing it will be done synchronously with motorsBurstDshot.
+      motorsPrepareDshot(id, ratio);
+#else
+      motorMap[id]->setCompare(motorMap[id]->tim, motorsBLConv16ToBits(ratio));
+#endif
+    }
+    else
+    {
+      float thrust = ((float)ithrust / 65536.0f);
+      float supply_voltage = pmGetBatteryVoltage();
+      float Vsup_percentage = (supply_voltage - 3.3f)/4.2f;
+      Vsup_percentage = Vsup_percentage > 1.0f ? 1.0f : Vsup_percentage;
+      Vsup_percentage = Vsup_percentage < 0.0f ? 0.0f : Vsup_percentage;
+
+      float percentage = 0.0f;
+      if (ithrust == 0) 
+      {
+        percentage = 0.0f;
+      } else {
+        percentage += -20284.4f * Vsup_percentage * Vsup_percentage;
+        percentage += -7932.858f * Vsup_percentage * thrust;
+        percentage += -840.002f * thrust * thrust;
+        percentage += 39884.176f * Vsup_percentage;
+        percentage += 7957.506f * thrust;
+        percentage += -19600.763f;
+      }
+      percentage = percentage > 1.0f ? 0.98f : percentage;
+      percentage = percentage < 0.0f ? 0.0f : percentage;
+      ratio = UINT16_MAX * percentage;
+      motor_ratios[id] = ratio;
+      motorMap[id]->setCompare(motorMap[id]->tim, motorsConv16ToBits(ratio));
+    }
+
+    if (id == MOTOR_M1)
+    {
+      uint64_t currTime = usecTimestamp();
+      cycleTime = currTime - lastCycleTime;
+      lastCycleTime = currTime;
+    }
+  }
+}
+
 void motorsEnablePWM(void)
 {
   for (int i = 0; i < NBR_OF_MOTORS; i++)
