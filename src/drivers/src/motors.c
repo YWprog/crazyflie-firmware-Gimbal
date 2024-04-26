@@ -593,12 +593,12 @@ void CSRmotorsSetRatio(uint32_t id, uint16_t ithrust)
       {
         percentage = 0.0f;
       } else {
-        percentage += -20284.4f * Vsup_percentage * Vsup_percentage;
-        percentage += -7932.858f * Vsup_percentage * thrust;
-        percentage += -840.002f * thrust * thrust;
-        percentage += 39884.176f * Vsup_percentage;
-        percentage += 7957.506f * thrust;
-        percentage += -19600.763f;
+        percentage += -202.844f * Vsup_percentage * Vsup_percentage;
+        percentage += -79.32858f * Vsup_percentage * thrust;
+        percentage += -8.40002f * thrust * thrust;
+        percentage += 398.84176f * Vsup_percentage;
+        percentage += 79.57506f * thrust;
+        percentage += -196.00763f;
       }
       percentage = percentage > 1.0f ? 0.98f : percentage;
       percentage = percentage < 0.0f ? 0.0f : percentage;
