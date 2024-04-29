@@ -37,13 +37,13 @@ static struct mat33 CRAZYFLIE_INERTIA_I =
       {0.83e-6f, 16.6e-6f, 0.72e-6f},
       {1.8e-6f, 0.72e-6f, 29.3e-6f}}};
 
-static void quatmultiply(const real32_T q[4], const real32_T r[4], real32_T qout[4])
-{
-  qout[0] = ((q[0] * r[0] - q[1] * r[1]) - q[2] * r[2]) - q[3] * r[3];
-  qout[1] = (q[0] * r[1] + r[0] * q[1]) + (q[2] * r[3] - q[3] * r[2]);
-  qout[2] = (q[0] * r[2] + r[0] * q[2]) + (q[3] * r[1] - q[1] * r[3]);
-  qout[3] = (q[0] * r[3] + r[0] * q[3]) + (q[1] * r[2] - q[2] * r[1]);
-}
+// static void quatmultiply(const real32_T q[4], const real32_T r[4], real32_T qout[4])
+// {
+//   qout[0] = ((q[0] * r[0] - q[1] * r[1]) - q[2] * r[2]) - q[3] * r[3];
+//   qout[1] = (q[0] * r[1] + r[0] * q[1]) + (q[2] * r[3] - q[3] * r[2]);
+//   qout[2] = (q[0] * r[2] + r[0] * q[2]) + (q[3] * r[1] - q[1] * r[3]);
+//   qout[3] = (q[0] * r[3] + r[0] * q[3]) + (q[1] * r[2] - q[2] * r[1]);
+// }
 
 // make sure the quaternion is normalized
 void quatToDCM(float *quat, struct mat33 *RotM)
@@ -210,11 +210,11 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   omni_attitude_controller_Y.thrustPart = thrustPart;
   omni_attitude_controller_Y.yawPart = yawPart;
 
-  // corresponding to i-frame Body coordinate, t_mi 's Unit is Newton
-  omni_attitude_controller_Y.t_m1 = thrustPart + rollPart - pitchPart - yawPart;
-  omni_attitude_controller_Y.t_m2 = thrustPart - rollPart - pitchPart + yawPart;
-  omni_attitude_controller_Y.t_m3 = thrustPart - rollPart + pitchPart - yawPart;
-  omni_attitude_controller_Y.t_m4 = thrustPart + rollPart + pitchPart + yawPart;
+  // t_mi 's Unit is Newton
+  omni_attitude_controller_Y.t_m1 = thrustPart - rollPart - pitchPart - yawPart;
+  omni_attitude_controller_Y.t_m2 = thrustPart - rollPart + pitchPart + yawPart;
+  omni_attitude_controller_Y.t_m3 = thrustPart + rollPart + pitchPart - yawPart;
+  omni_attitude_controller_Y.t_m4 = thrustPart + rollPart - pitchPart + yawPart;
 
   omni_attitude_controller_Y.IsClamped = 0;
   if (omni_attitude_controller_Y.t_m1 < 0.0f) 
