@@ -73,22 +73,15 @@ void omni_attitude_controller_DoAttitudeLoop(void)
   struct mat33 R_r = mzero();
   quatToDCM((float*)&omni_attitude_controller_U.qw_r, &R_r);
 
-  // rotate quaternion fbk to i-frame 
-  static const real32_T q45[4] = { 0.707106769F, 0.0F, 0.0F, 0.707106769F };
-  static const real32_T q45inv[4] = { -0.707106769F, 0.0F, 0.0F, 0.707106769F };
-  real32_T temp[4] = {0.0, 0.0, 0.0, 0.0};
   real32_T q_Qi[4] = {0.0, 0.0, 0.0, 0.0};
-  real32_T q_i[4] = {0.0, 0.0, 0.0, 0.0};
   q_Qi[0] = omni_attitude_controller_U.qw_IMU;
   q_Qi[1] = omni_attitude_controller_U.qx_IMU;
   q_Qi[2] = omni_attitude_controller_U.qy_IMU;
   q_Qi[3] = omni_attitude_controller_U.qz_IMU;
-  quatmultiply(q_Qi, q45inv, temp);
-  quatmultiply(q45, temp, q_i);
 
   // quaternion fbk to DCM
   struct mat33 R = mzero();
-  quatToDCM(q_i, &R);
+  quatToDCM(q_Qi, &R);
 
   // attitude controller
   // 0.5*(R_r_T * R - R_T * R_r), eR = [m32, m12, m21]';
@@ -111,8 +104,7 @@ void omni_attitude_controller_DoAttitudeLoop(void)
 
   omni_attitude_controller_Y.wx_r = (real32_T)Omni_gains.krx * eR.x + (real32_T)Omni_gains.krix * omni_attitude_controller_Y.eRxInt; 
   omni_attitude_controller_Y.wy_r = (real32_T)Omni_gains.kry * eR.y + (real32_T)Omni_gains.kriy * omni_attitude_controller_Y.eRyInt; ; 
-  // omni_attitude_controller_Y.wz_r = (real32_T)Omni_gains.krz * eR.z; 
-  omni_attitude_controller_Y.wz_r = omni_attitude_controller_Y.wx_r * tanf(omni_attitude_controller_U.wx_r);
+  omni_attitude_controller_Y.wz_r = (real32_T)Omni_gains.krz * eR.z; 
 }
 
 void omni_attitude_controller_DoAttitudeRateLoop(float dt)
@@ -175,17 +167,6 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   eiInt.y = omni_attitude_controller_Y.eiyInt;
   eiInt.z = omni_attitude_controller_Y.eizInt;
 
-  // PID Controller M = J * ( Kw*eW + Ki * eiInt ) with unit Nm
-  // volatile struct vec KW = vzero();
-  // KW.x = omni_attitude_controller_P.Kwx;
-  // KW.y = omni_attitude_controller_P.Kwy;
-  // KW.z = omni_attitude_controller_P.Kwz;
-
-  // volatile struct vec Ki = vzero();
-  // Ki.x = omni_attitude_controller_P.Kix;
-  // Ki.y = omni_attitude_controller_P.Kiy;
-  // Ki.z = omni_attitude_controller_P.Kiz;
-
   struct vec uW = vzero();
   struct vec ui = vzero();
   struct vec ud = vzero();
@@ -240,8 +221,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m1 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m1 > 0.206f) {
-    omni_attitude_controller_Y.t_m1 = 0.206f;
+  } else if (omni_attitude_controller_Y.t_m1 > 0.1472f) {
+    omni_attitude_controller_Y.t_m1 = 0.1472f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -249,8 +230,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m2 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m2 > 0.206f) {
-    omni_attitude_controller_Y.t_m2 = 0.206f;
+  } else if (omni_attitude_controller_Y.t_m2 > 0.1472f) {
+    omni_attitude_controller_Y.t_m2 = 0.1472f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -258,8 +239,8 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m3 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m3 > 0.206f) {
-    omni_attitude_controller_Y.t_m3 = 0.206f;
+  } else if (omni_attitude_controller_Y.t_m3 > 0.1472f) {
+    omni_attitude_controller_Y.t_m3 = 0.1472f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
@@ -267,16 +248,16 @@ void omni_attitude_controller_DoAttitudeRateLoop(float dt)
   {
     omni_attitude_controller_Y.t_m4 = 0.0f;
     omni_attitude_controller_Y.IsClamped = 1;
-  } else if (omni_attitude_controller_Y.t_m4 > 0.206f) {
-    omni_attitude_controller_Y.t_m4 = 0.206f;
+  } else if (omni_attitude_controller_Y.t_m4 > 0.1472f) {
+    omni_attitude_controller_Y.t_m4 = 0.1472f;
     omni_attitude_controller_Y.IsClamped = 1;
   }
 
   // Turn Newton into percentage and count
-  omni_attitude_controller_Y.m1 = omni_attitude_controller_Y.t_m1 / 0.206f * 65535;
-  omni_attitude_controller_Y.m2 = omni_attitude_controller_Y.t_m2 / 0.206f * 65535;
-  omni_attitude_controller_Y.m3 = omni_attitude_controller_Y.t_m3 / 0.206f * 65535;
-  omni_attitude_controller_Y.m4 = omni_attitude_controller_Y.t_m4 / 0.206f * 65535;
+  omni_attitude_controller_Y.m1 = omni_attitude_controller_Y.t_m1 / 0.1472f * 65535;
+  omni_attitude_controller_Y.m2 = omni_attitude_controller_Y.t_m2 / 0.1472f * 65535;
+  omni_attitude_controller_Y.m3 = omni_attitude_controller_Y.t_m3 / 0.1472f * 65535;
+  omni_attitude_controller_Y.m4 = omni_attitude_controller_Y.t_m4 / 0.1472f * 65535;
 }
 
 void omni_attitude_controller_step_hand(void)

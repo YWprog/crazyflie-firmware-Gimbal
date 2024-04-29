@@ -71,8 +71,8 @@ void controllerOmniAtt(control_t *control, const setpoint_t *setpoint,
       omni_attitude_controller_U.qy_IMU = state->attitudeQuaternion.y;
       omni_attitude_controller_U.qz_IMU = state->attitudeQuaternion.z;
 
-      omni_attitude_controller_U.gyro_x = -radians(sensors->gyro.y);
-      omni_attitude_controller_U.gyro_y = radians(sensors->gyro.x);
+      omni_attitude_controller_U.gyro_x = radians(sensors->gyro.x);
+      omni_attitude_controller_U.gyro_y = radians(sensors->gyro.y);
       omni_attitude_controller_U.gyro_z = radians(sensors->gyro.z);
 
       omni_attitude_controller_DoAttitudeLoop();
