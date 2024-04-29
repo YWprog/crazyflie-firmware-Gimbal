@@ -126,6 +126,7 @@ LOG_ADD(LOG_FLOAT, wz_r, &omni_attitude_controller_Y.wz_r)
 
 LOG_ADD(LOG_FLOAT, wx, &omni_attitude_controller_U.gyro_x)
 LOG_ADD(LOG_FLOAT, wy, &omni_attitude_controller_U.gyro_y)
+LOG_ADD(LOG_FLOAT, wz, &omni_attitude_controller_U.gyro_z)
 
 // Angular speed loop
 LOG_ADD(LOG_FLOAT, eWx, &omni_attitude_controller_Y.eWx)
@@ -163,6 +164,7 @@ PARAM_ADD(PARAM_FLOAT, KRz, &Omni_gains.krz)
 
 PARAM_ADD(PARAM_FLOAT, KRix, &Omni_gains.krix)
 PARAM_ADD(PARAM_FLOAT, KRiy, &Omni_gains.kriy)
+PARAM_ADD(PARAM_FLOAT, KRiz, &Omni_gains.kriz)
 
 PARAM_ADD(PARAM_FLOAT, Kwx, &Omni_gains.kwx)
 PARAM_ADD(PARAM_FLOAT, Kwy, &Omni_gains.kwy)

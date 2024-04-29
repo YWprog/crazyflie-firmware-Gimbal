@@ -35,6 +35,7 @@ typedef struct {
   float krz;
   float krix;
   float kriy;
+  float kriz;
   // speed loop
   float kix;
   float kiy;
