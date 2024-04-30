@@ -104,8 +104,8 @@ void omni_attitude_controller_DoAttitudeLoop(void)
   omni_attitude_controller_Y.eRzInt = omni_attitude_controller_Y.eRzInt + eR.z * 0.002f;
 
   omni_attitude_controller_Y.wx_r = (real32_T)Omni_gains.krx * eR.x + (real32_T)Omni_gains.krix * omni_attitude_controller_Y.eRxInt; 
-  omni_attitude_controller_Y.wy_r = (real32_T)Omni_gains.kry * eR.y + (real32_T)Omni_gains.kriy * omni_attitude_controller_Y.eRyInt; ; 
-  omni_attitude_controller_Y.wz_r = (real32_T)Omni_gains.krz * eR.z + (real32_T)Omni_gains.kriz * omni_attitude_controller_Y.eRyInt; 
+  omni_attitude_controller_Y.wy_r = (real32_T)Omni_gains.kry * eR.y + (real32_T)Omni_gains.kriy * omni_attitude_controller_Y.eRyInt;
+  omni_attitude_controller_Y.wz_r = (real32_T)Omni_gains.krz * eR.z + (real32_T)Omni_gains.kriz * omni_attitude_controller_Y.eRzInt; 
 }
 
 void omni_attitude_controller_DoAttitudeRateLoop(float dt)
