@@ -1,3 +1,5 @@
+
+
 /**
  * Authored by Mike Wen, 2024.March
  *
@@ -7,17 +9,6 @@
 #pragma once
 
 #include "stabilizer_types.h"
-#include "pid.h"
-
-enum CONTROL_MODE
-{
-  GIMBAL2D_CONTROLMODE_PD = 8,
-  GIMBAL2D_CONTROLMODE_PID = 0,
-  GIMBAL2D_CONTROLMODE_PID_JALPHA = 1,
-  GIMBAL2D_CONTROLMODE_OFL = 2,
-  GIMBAL2D_CONTROLMODE_NSF = 3,
-  GIMBAL2D_CONTROLMODE_PWMTEST = 10,
-};
 
 typedef struct {
   float qw_Base;                      /* '<Root>/qw_op' */
@@ -30,10 +21,6 @@ typedef struct {
   float ClampedThrust;
   float alpha_desired;              /* '<Root>/alpha_desired' */
   float beta_desired;               /* '<Root>/beta_desired' */
-  float alpha_desired_prev;             
-  float beta_desired_prev;   
-  float alphas_desired;             
-  float betas_desired;              
   float qw_IMU;                     /* '<Root>/qw_IMU' */
   float qx_IMU;                     /* '<Root>/qx_IMU' */
   float qy_IMU;                     /* '<Root>/qy_IMU' */
@@ -45,7 +32,6 @@ typedef struct {
 
 typedef struct {
   unsigned short IsClamped;
-  unsigned short UsingControlMode;
   unsigned short Treset;
   unsigned short m1;                         /* '<Root>/m1' */
   unsigned short m2;                         /* '<Root>/m2' */
@@ -67,14 +53,6 @@ typedef struct {
   float t_m2;                       /* '<Root>/t_m2' */
   float t_m3;                       /* '<Root>/t_m3' */
   float t_m4;                       /* '<Root>/t_m4' */
-  float z1;                       
-  float z2;                       
-  float z3;                       
-  float z4;                       
-  float utilt1;
-  float utilt2;
-  float u_u1;
-  float u_u2;
   float error_alphas;               /* '<Root>/error_alphas' */
   float error_betas;                /* '<Root>/error_betas' */
   float rollPart;
@@ -84,26 +62,22 @@ typedef struct {
   float Tau_x;                      /* '<Root>/Tau_x' */
   float Tau_y;                      /* '<Root>/Tau_y' */
   float Tau_z;                      /* '<Root>/Tau_z' */
-  float pos_am;
-  float pos_bm;
+  ///////////// Modified by Charles
+  float u_u1;
+  float u_u2;
+  float utilt1;
+  float utilt2;
+  ////////
 } Gimbal2D_Y_Type;
 
 typedef struct {
-    unsigned short ControlMode;
-    unsigned short PWMTest[4];
-    float OFL_Lambda1;
-    float OFL_Lambda2;
-    float OFL_k1;
-    float OFL_k2;
+    float Kp;
     float ThrustUpperBound;
     float ThrustLowerBound;
-    float NSF_K[2][4]; // Optimal Gain Matrix
-    PidObject alphaPID;
-    PidObject betaPID;
-    PidObject alphasPID;
-    PidObject betasPID;
-    PidObject alphaPD;
-    PidObject betaPD;
+    ////// Modified by Charles (Why doesn't work?)
+    float K[2][4]; // Optimal Gain Matrix
+    float B_inv[2][4]; // Pseudo-inverse Matrix
+    float J[3]; // Moment of Inertia: Jx Jy Jz     
 } Gimbal2D_P_Type;
 
 extern Gimbal2D_P_Type Gimbal2D_P;
